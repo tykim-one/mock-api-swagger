@@ -1,6 +1,17 @@
 {
+  "name": "mock-api-swagger",
+  "version": "1.0.0",
+  "description": "Mock API with Swagger documentation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
   "dependencies": {
     "express": "^5.1.0",
     "swagger-ui-express": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

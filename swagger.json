@@ -1,57 +1,977 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "My Mock API",
-      "description": "백엔드 없이 Mock JSON 데이터를 사용하는 예시 API입니다.",
-      "version": "1.0.0"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Financial Data API",
+    "description": "주식 시장 데이터를 위한 종합 API - 뉴스, 공시, 어닝콜, AI 분석 리포트 제공",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "News",
+      "description": "뉴스 관련 API - 주식 시장 뉴스 조회 및 분석"
     },
-    "servers": [
-      {
-        "url": "http://localhost:3000"
+    {
+      "name": "Filings",
+      "description": "공시 관련 API - 기업 공시 정보 조회"
+    },
+    {
+      "name": "Earnings Calls",
+      "description": "어닝콜 관련 API - 실적 발표 콘퍼런스 콜 정보"
+    },
+    {
+      "name": "AI Reports",
+      "description": "AI 분석 리포트 API - AI가 생성한 종합 분석 리포트"
+    },
+    {
+      "name": "Stocks",
+      "description": "종목 정보 API - 주식 종목 기본 정보 조회"
+    }
+  ],
+  "paths": {
+    "/news": {
+      "get": {
+        "tags": ["News"],
+        "summary": "모든 뉴스 목록 조회",
+        "description": "시스템에 등록된 모든 뉴스 목록을 반환합니다.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "반환할 뉴스 개수 제한",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "건너뛸 뉴스 개수",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/News"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    ],
-    "paths": {
-      "/users": {
-        "get": {
-          "summary": "모든 사용자 목록 가져오기",
-          "description": "시스템에 등록된 모든 사용자의 목록을 반환합니다.",
-          "responses": {
-            "200": {
-              "description": "성공적인 응답",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        }
+    },
+    "/news/{id}": {
+      "get": {
+        "tags": ["News"],
+        "summary": "특정 뉴스 상세 조회",
+        "description": "ID로 특정 뉴스의 상세 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "뉴스 ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/News"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "뉴스를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news/stock/{ticker}": {
+      "get": {
+        "tags": ["News"],
+        "summary": "특정 종목 뉴스 조회",
+        "description": "특정 종목의 모든 뉴스를 조회합니다.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "description": "종목 티커 심볼",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/News"
+                      }
+                    },
+                    "ticker": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/filings": {
+      "get": {
+        "tags": ["Filings"],
+        "summary": "모든 공시 목록 조회",
+        "description": "시스템에 등록된 모든 공시 목록을 반환합니다.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "반환할 공시 개수 제한",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "건너뛸 공시 개수",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Filing"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/filings/{id}": {
+      "get": {
+        "tags": ["Filings"],
+        "summary": "특정 공시 상세 조회",
+        "description": "ID로 특정 공시의 상세 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "공시 ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filing"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공시를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/filings/stock/{ticker}": {
+      "get": {
+        "tags": ["Filings"],
+        "summary": "특정 종목 공시 조회",
+        "description": "특정 종목의 모든 공시를 조회합니다.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "description": "종목 티커 심볼",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Filing"
+                      }
+                    },
+                    "ticker": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings-calls": {
+      "get": {
+        "tags": ["Earnings Calls"],
+        "summary": "모든 어닝콜 목록 조회",
+        "description": "시스템에 등록된 모든 어닝콜 목록을 반환합니다.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "반환할 어닝콜 개수 제한",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "건너뛸 어닝콜 개수",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EarningsCall"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings-calls/{id}": {
+      "get": {
+        "tags": ["Earnings Calls"],
+        "summary": "특정 어닝콜 상세 조회",
+        "description": "ID로 특정 어닝콜의 상세 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "어닝콜 ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EarningsCall"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "어닝콜을 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/earnings-calls/stock/{ticker}": {
+      "get": {
+        "tags": ["Earnings Calls"],
+        "summary": "특정 종목 어닝콜 조회",
+        "description": "특정 종목의 모든 어닝콜을 조회합니다.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "description": "종목 티커 심볼",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EarningsCall"
+                      }
+                    },
+                    "ticker": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports": {
+      "get": {
+        "tags": ["AI Reports"],
+        "summary": "모든 AI 리포트 목록 조회",
+        "description": "시스템에 등록된 모든 AI 분석 리포트 목록을 반환합니다.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "반환할 리포트 개수 제한",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "건너뛸 리포트 개수",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AIReport"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/{id}": {
+      "get": {
+        "tags": ["AI Reports"],
+        "summary": "특정 AI 리포트 상세 조회",
+        "description": "ID로 특정 AI 분석 리포트의 상세 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "리포트 ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "리포트를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reports/stock/{ticker}": {
+      "get": {
+        "tags": ["AI Reports"],
+        "summary": "특정 종목 AI 리포트 조회",
+        "description": "특정 종목의 모든 AI 분석 리포트를 조회합니다.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "description": "종목 티커 심볼",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AIReport"
+                      }
+                    },
+                    "ticker": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stocks": {
+      "get": {
+        "tags": ["Stocks"],
+        "summary": "모든 종목 목록 조회",
+        "description": "시스템에 등록된 모든 종목 목록을 반환합니다.",
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Stock"
                       }
                     }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stocks/{ticker}": {
+      "get": {
+        "tags": ["Stocks"],
+        "summary": "특정 종목 정보 조회",
+        "description": "티커 심볼로 특정 종목의 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "description": "종목 티커 심볼",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공적인 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stock"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "종목을 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "News": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "뉴스 고유 ID"
+          },
+          "stockInfo": {
+            "$ref": "#/components/schemas/StockInfo"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "뉴스 발행 시간"
+          },
+          "collectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "뉴스 수집 시간"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "뉴스 소스명"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "뉴스 원문 URL"
+              }
+            }
+          },
+          "title": {
+            "type": "object",
+            "properties": {
+              "original": {
+                "type": "string",
+                "description": "원문 제목"
+              },
+              "translated": {
+                "type": "string",
+                "description": "번역된 제목"
+              }
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "oneLiner": {
+                "type": "string",
+                "description": "한 줄 요약"
+              },
+              "content": {
+                "type": "string",
+                "description": "상세 요약 내용"
+              }
+            }
+          },
+          "summary_translate": {
+            "type": "object",
+            "properties": {
+              "oneLiner_ko": {
+                "type": "string",
+                "description": "한국어 한 줄 요약"
+              },
+              "content_ko": {
+                "type": "string",
+                "description": "한국어 상세 요약"
+              }
+            }
+          },
+          "analysis": {
+            "type": "object",
+            "properties": {
+              "sentiment": {
+                "type": "object",
+                "properties": {
+                  "score": {
+                    "type": "number",
+                    "description": "감정 점수 (-1 ~ 1)"
                   },
-                  "examples": {
-                    "success": {
-                      "summary": "사용자 목록 예시",
-                      "value": [
-                        {
-                          "id": 1,
-                          "name": "김철수",
-                          "email": "chulsoo.kim@example.com"
-                        },
-                        {
-                          "id": 2,
-                          "name": "이영희",
-                          "email": "younghee.lee@example.com"
-                        }
-                      ]
+                  "label": {
+                    "type": "string",
+                    "description": "감정 라벨"
+                  }
+                }
+              },
+              "keywords": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "키워드 목록"
+              },
+              "relatedStocks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "관련 종목 티커 목록"
+              }
+            }
+          }
+        }
+      },
+      "Filing": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "공시 고유 ID"
+          },
+          "stockInfo": {
+            "$ref": "#/components/schemas/StockInfo"
+          },
+          "filingDate": {
+            "type": "string",
+            "format": "date",
+            "description": "공시 제출일"
+          },
+          "periodOfReport": {
+            "type": "string",
+            "format": "date",
+            "description": "보고 대상 기간 종료일"
+          },
+          "filingType": {
+            "type": "string",
+            "description": "공시 종류 (10-K, 10-Q, 8-K 등)"
+          },
+          "title": {
+            "type": "object",
+            "properties": {
+              "original": {
+                "type": "string",
+                "description": "원문 제목"
+              },
+              "translated": {
+                "type": "string",
+                "description": "번역된 제목"
+              }
+            }
+          },
+          "documentUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "원본 문서 링크"
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "riskFactors": {
+                "type": "object",
+                "properties": {
+                  "original_full": {
+                    "type": "string",
+                    "description": "원문 전체 내용"
+                  },
+                  "summary_original": {
+                    "type": "string",
+                    "description": "원문 요약"
+                  },
+                  "summary_translated": {
+                    "type": "string",
+                    "description": "번역된 요약"
+                  }
+                }
+              },
+              "managementDiscussion": {
+                "type": "object",
+                "properties": {
+                  "original_full": {
+                    "type": "string",
+                    "description": "원문 전체 내용"
+                  },
+                  "summary_original": {
+                    "type": "string",
+                    "description": "원문 요약"
+                  },
+                  "summary_translated": {
+                    "type": "string",
+                    "description": "번역된 요약"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "EarningsCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "어닝콜 고유 ID"
+          },
+          "stockInfo": {
+            "$ref": "#/components/schemas/StockInfo"
+          },
+          "callTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "어닝콜 시작 시각"
+          },
+          "fiscalPeriod": {
+            "type": "string",
+            "description": "회계 기간"
+          },
+          "highlights": {
+            "type": "object",
+            "properties": {
+              "overallSummary": {
+                "type": "object",
+                "properties": {
+                  "original": {
+                    "type": "string",
+                    "description": "원문 전체 요약"
+                  },
+                  "translated": {
+                    "type": "string",
+                    "description": "번역된 전체 요약"
+                  }
+                }
+              },
+              "keyQnA": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "question": {
+                      "type": "string",
+                      "description": "질문"
+                    },
+                    "answer": {
+                      "type": "string",
+                      "description": "답변"
+                    },
+                    "questioner": {
+                      "type": "string",
+                      "description": "질문자"
+                    }
+                  }
+                }
+              },
+              "toneAnalysis": {
+                "type": "object",
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "전체적인 톤"
+                  },
+                  "ceoTone": {
+                    "type": "string",
+                    "description": "CEO 톤"
+                  },
+                  "cfoTone": {
+                    "type": "string",
+                    "description": "CFO 톤"
+                  }
+                }
+              }
+            }
+          },
+          "transcript": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sequence": {
+                  "type": "integer",
+                  "description": "순서"
+                },
+                "speaker": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "발언자 이름"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "발언자 역할"
+                    }
+                  }
+                },
+                "text": {
+                  "type": "object",
+                  "properties": {
+                    "original": {
+                      "type": "string",
+                      "description": "원문"
+                    },
+                    "translated": {
+                      "type": "string",
+                      "description": "번역문"
                     }
                   }
                 }
@@ -60,58 +980,219 @@
           }
         }
       },
-      "/users/{userId}": {
-        "get": {
-          "summary": "특정 사용자 정보 가져오기",
-          "description": "ID로 특정 사용자의 정보를 조회합니다.",
-          "parameters": [
-            {
-              "name": "userId",
-              "in": "path",
-              "required": true,
-              "description": "조회할 사용자의 ID",
-              "schema": {
-                "type": "integer"
+      "AIReport": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "description": "리포트 고유 ID"
+          },
+          "reportDate": {
+            "type": "string",
+            "format": "date",
+            "description": "리포트 작성일"
+          },
+          "stockInfo": {
+            "type": "object",
+            "properties": {
+              "ticker": {
+                "type": "string",
+                "description": "종목 티커"
+              },
+              "name": {
+                "type": "string",
+                "description": "회사명"
+              },
+              "industry": {
+                "type": "string",
+                "description": "업종"
               }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "성공적인 응답",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "integer"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "email": {
-                        "type": "string"
-                      }
-                    }
+          },
+          "analysisSections": {
+            "type": "object",
+            "properties": {
+              "investmentPoints": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "섹션 제목"
                   },
-                  "examples": {
-                    "user1": {
-                      "summary": "ID가 1인 사용자 예시",
-                      "value": {
-                        "id": 1,
-                        "name": "김철수",
-                        "email": "chulsoo.kim@example.com"
-                      }
-                    }
+                  "content": {
+                    "type": "string",
+                    "description": "섹션 내용"
+                  }
+                }
+              },
+              "earningsCallHighlights": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "섹션 제목"
+                  },
+                  "summary": {
+                    "type": "string",
+                    "description": "요약 내용"
+                  },
+                  "sourceCallId": {
+                    "type": "string",
+                    "description": "근거 어닝콜 ID"
+                  }
+                }
+              },
+              "riskAssessment": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "섹션 제목"
+                  },
+                  "points": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "리스크 포인트 목록"
+                  }
+                }
+              },
+              "recentNewsSummary": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "섹션 제목"
+                  },
+                  "summary": {
+                    "type": "string",
+                    "description": "요약 내용"
+                  },
+                  "sourceNewsIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "근거 뉴스 ID 목록"
+                  }
+                }
+              },
+              "executiveSummary": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "섹션 제목"
+                  },
+                  "summary": {
+                    "type": "string",
+                    "description": "요약 내용"
                   }
                 }
               }
-            },
-            "404": {
-              "description": "사용자를 찾을 수 없음"
             }
+          },
+          "upcomingEvents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "이벤트 날짜"
+                },
+                "eventType": {
+                  "type": "string",
+                  "description": "이벤트 유형"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "이벤트 설명"
+                }
+              }
+            }
+          },
+          "sourceDataIds": {
+            "type": "object",
+            "properties": {
+              "news": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사용된 뉴스 ID 목록"
+              },
+              "filings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사용된 공시 ID 목록"
+              },
+              "earningsCalls": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "사용된 어닝콜 ID 목록"
+              }
+            }
+          }
+        }
+      },
+      "StockInfo": {
+        "type": "object",
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "description": "종목 티커 심볼"
+          },
+          "name": {
+            "type": "string",
+            "description": "회사명"
+          },
+          "exchange": {
+            "type": "string",
+            "description": "거래소"
+          }
+        }
+      },
+      "Stock": {
+        "type": "object",
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "description": "종목 티커 심볼"
+          },
+          "name": {
+            "type": "string",
+            "description": "회사명"
+          },
+          "exchange": {
+            "type": "string",
+            "description": "거래소"
+          },
+          "industry": {
+            "type": "string",
+            "description": "업종"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "에러 메시지"
+          },
+          "message": {
+            "type": "string",
+            "description": "상세 에러 설명"
           }
         }
       }
     }
   }
+}
