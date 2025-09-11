@@ -349,8 +349,25 @@ app.get('/stocks/:ticker', (req, res) => {
   res.json(stock);
 });
 
+// 루트 경로 추가
+app.get('/', (req, res) => {
+  res.json({
+    message: "Mock API Server is running!",
+    version: "1.0.0",
+    endpoints: {
+      news: "/news",
+      filings: "/filings", 
+      earningsCalls: "/earnings-calls",
+      reports: "/reports",
+      stocks: "/stocks",
+      swaggerUI: "/api-docs"
+    }
+  });
+});
+
 // Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
   console.log(`Mock API 서버가 http://localhost:${port} 에서 실행 중입니다.`);
