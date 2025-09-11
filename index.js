@@ -384,6 +384,7 @@ app.get('/api-docs', (req, res) => {
 <body>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-standalone-preset.js"></script>
   <script>
     window.onload = function() {
       const ui = SwaggerUIBundle({
@@ -391,9 +392,9 @@ app.get('/api-docs', (req, res) => {
         dom_id: '#swagger-ui',
         presets: [
           SwaggerUIBundle.presets.apis,
-          SwaggerUIBundle.presets.standalone
+          SwaggerUIStandalonePreset
         ],
-        layout: "StandaloneLayout"
+        layout: 'StandaloneLayout'
       });
     };
   </script>
