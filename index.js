@@ -365,8 +365,46 @@ app.get('/', (req, res) => {
   });
 });
 
-// Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Swagger UI - 간단한 HTML 버전
+app.get('/api-docs', (req, res) => {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mock API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui.css" />
+  <style>
+    html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+    *, *:before, *:after { box-sizing: inherit; }
+    body { margin:0; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@4.15.5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: '/swagger.json',
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.presets.standalone
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>
+  `;
+  res.send(html);
+});
+
+// Swagger JSON 엔드포인트 추가
+app.get('/swagger.json', (req, res) => {
+  res.json(swaggerDocument);
+});
 
 app.listen(port, () => {
   console.log(`Mock API 서버가 http://localhost:${port} 에서 실행 중입니다.`);
