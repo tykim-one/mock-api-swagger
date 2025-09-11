@@ -406,6 +406,22 @@ app.get('/swagger.json', (req, res) => {
   res.json(swaggerDocument);
 });
 
+// 디버깅용 테스트 라우트
+app.get('/test', (req, res) => {
+  res.json({ 
+    message: "Test route is working!",
+    timestamp: new Date().toISOString(),
+    routes: [
+      "/",
+      "/news", 
+      "/stocks",
+      "/api-docs",
+      "/swagger.json",
+      "/test"
+    ]
+  });
+});
+
 app.listen(port, () => {
   console.log(`Mock API 서버가 http://localhost:${port} 에서 실행 중입니다.`);
   console.log(`Swagger UI는 http://localhost:${port}/api-docs 에서 확인하세요.`);
