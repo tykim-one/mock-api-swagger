@@ -366,10 +366,14 @@ app.get('/', (req, res) => {
 });
 
 // Swagger UI
-app.use('/api-docs', swaggerUi.serve);
-app.get('/api-docs', swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
   console.log(`Mock API 서버가 http://localhost:${port} 에서 실행 중입니다.`);
   console.log(`Swagger UI는 http://localhost:${port}/api-docs 에서 확인하세요.`);
+  console.log(`사용 가능한 엔드포인트:`);
+  console.log(`- GET /`);
+  console.log(`- GET /news`);
+  console.log(`- GET /stocks`);
+  console.log(`- GET /api-docs`);
 });

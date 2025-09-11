@@ -4,8 +4,8 @@
 
 ## 🚀 배포된 서버
 
-- **API 서버**: [배포 URL]
-- **Swagger UI**: [배포 URL]/api-docs
+- **API 서버**: https://mock-api-swagger.railway.app
+- **Swagger UI**: https://mock-api-swagger.railway.app/api-docs
 
 ## 📋 API 엔드포인트
 
