@@ -54,3 +54,31 @@ Swagger UI는 `http://localhost:8000/api-docs`에서 확인할 수 있습니다.
 - Express.js - 웹 서버 프레임워크
 - Swagger UI Express - API 문서화
 
+## 🆓 Render로 무료 배포하기
+
+1. GitHub 저장소 준비
+   - 새 저장소를 만들고 코드를 푸시하세요.
+   ```bash
+   git init
+   git add .
+   git commit -m "chore: initial"
+   git branch -M main
+   git remote add origin https://github.com/<your-username>/<repo>.git
+   git push -u origin main
+   ```
+
+2. Render에 배포 (무료 플랜)
+   - `render.yaml`가 포함되어 있으므로 Render 대시보드에서 다음을 수행하세요:
+   - Render 로그인 → New + → Blueprint → GitHub 저장소 선택 → Deploy Blueprint
+   - 서비스 이름을 `mock-api-swagger`로 설정(선택) 후 생성
+   - 최초 배포가 완료되면 제공된 도메인으로 접속합니다.
+
+3. 확인
+   - 헬스체크: `https://<서비스-도메인>/test`
+   - Swagger UI: `https://<서비스-도메인>/api-docs`
+
+4. 참고
+   - PORT는 Render가 자동으로 주입합니다(코드는 `process.env.PORT` 사용).
+   - CORS가 활성화되어 있어 브라우저에서 바로 호출 가능합니다.
+   - 문제가 있으면: Logs 탭 확인 → 재배포 또는 `buildCommand/startCommand` 점검(`npm install` / `npm start`).
+

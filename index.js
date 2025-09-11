@@ -354,13 +354,15 @@ app.get('/', (req, res) => {
   res.json({
     message: "Mock API Server is running!",
     version: "1.0.0",
+    timestamp: new Date().toISOString(),
     endpoints: {
       news: "/news",
       filings: "/filings", 
       earningsCalls: "/earnings-calls",
       reports: "/reports",
       stocks: "/stocks",
-      swaggerUI: "/api-docs"
+      swaggerUI: "/api-docs",
+      test: "/test"
     }
   });
 });
